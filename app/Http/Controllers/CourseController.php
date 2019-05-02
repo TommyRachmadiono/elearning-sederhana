@@ -33,12 +33,14 @@ class CourseController extends Controller
 
 	public function courseDetailPage($id)
 	{
+		$courses = Course::where('id', '=', $id)->get();
+
 		$posts = Post::with(['comments' => function($query){
 			$query->select('u.name', 'u.photo', 'comments.*')->join('users as u', 'u.id', '=', 'comments.user_id');
 		}])->with('attachments')->with('dosen')->where('posts.course_id', '=', $id)->orderBy('posts.created_at', 'desc')->get();
 
-		// return response()->json($posts);
-		return view('course', ['posts' => $posts, 'course_id' => $id]);
+		// return response()->json([$posts, $courses]);
+		return view('course', ['posts' => $posts, 'course_id' => $id, 'courses' => $courses]);
 	}
 
 	public function postContent(Request $request)
@@ -143,7 +145,7 @@ class CourseController extends Controller
 		$course = Course::findOrFail($id);
 		$course->update($request->all());
 
-		return redirect()->route('index_page')->with('success', 'Course edited!');
+		return back()->with('success', 'Course edited!');
 	}
 
 	public function destroy($id)

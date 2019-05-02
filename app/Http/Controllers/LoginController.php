@@ -32,8 +32,13 @@ class LoginController extends Controller
 
 	public function register(Request $request)
 	{
-		$user = User::create($request->all());
+		$user = new User;
+		$user->fill($request->all());
 		$user->password = bcrypt($request->password);
+		if ($request->role == 'dosen')
+			$user->photo = 'profile2.png';
+		else
+			$user->photo = 'profile1.png';
 		$user->save();
 
 		return redirect()->route('login')->with('success', 'Register success');

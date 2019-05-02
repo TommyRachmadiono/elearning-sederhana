@@ -2,7 +2,17 @@
 
 @section('content')
 
-@if (Auth::User()->role == 'dosen')
+@foreach ($courses as $course)
+<?php
+	$day1 = date('Y-m-d H:i:s');
+	$day1 = strtotime($day1);
+	$day2 = $course->end_date;
+	$day2 = strtotime($day2);
+	$diffHours = round(($day2 - $day1) / 3600);
+?>
+@endforeach
+
+@if (Auth::User()->role == 'dosen' && $diffHours > 0)
 
 <div class="row mt-5">
 	<div class="container">
@@ -23,8 +33,12 @@
 		</form>
 	</div>
 </div>
-@endif
 
+@else 
+<div class="alert alert-warning" style="margin-top:5%;">
+	<h1 style="text-align: center;">THIS COURSE HAVE BEEN ARCHIEVED</h1>
+</div>
+@endif
 
 @foreach ($posts as $post)
 
@@ -38,7 +52,7 @@
 			</div>
 			<div class="media-body">
 				<h4 class="media-heading">{{ $post->dosen->name }}
-					@if (Auth::User()->role == "dosen")
+					@if (Auth::User()->role == "dosen" && $diffHours > 0)
 					
 					<form action="{{ route('post.destroy', $post->id) }}" method="POST" style="display: inline;">
 						{{ csrf_field() }}
@@ -60,15 +74,13 @@
 						</div>
 					</form>
 
-					<!-- MODAL ADD ATTACHMENT -->
-					<div id="add-attachment{{ $post->id }}" class="modal fade in" tabindex="-1" role="dialog">
-						<div class="modal-dialog modal-lg" role="document">
-							<div class="modal-content">
-								<div class="modal-header">
-									<h5 class="modal-title">Add Attachment</h5>
+				<!-- MODAL ADD ATTACHMENT -->
+				<div id="add-attachment{{ $post->id }}" class="modal fade in" tabindex="-1" role="dialog">
+					<div class="modal-dialog modal-lg" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title">Add Attachment</h5>
 
-									
-								</button>
 							</div>
 							<form action="{{ route('attachment.store') }}" method="POST" enctype="multipart/form-data">
 								<div class="modal-body">
@@ -133,7 +145,7 @@
 						<a href="{{ asset($attachment->url) }}" download="">
 							<i class="fa fa-file"> {{ $attachment->file }}</i>
 						</a> 
-						@if(Auth::User()->role == "dosen")
+						@if(Auth::User()->role == "dosen" && $diffHours > 0)
 						<input type="hidden" name="post_id" value="{{ $post->id }}">
 						<input type="hidden" name="_method" value="DELETE">
 						<button class="btn btn-sm" type="submit">
@@ -160,7 +172,7 @@
 				<div class="media-body">
 					<h4 class="media-heading">{{ $post->comments[$i]->name}}
 						<!-- -->
-						@if ($post->comments[$i]->user_id == Auth::User()->id || Auth::User()->role == "dosen")
+						@if ($post->comments[$i]->user_id == Auth::User()->id && $diffHours > 0 || Auth::User()->role == "dosen" && $diffHours > 0)
 
 						<form action="{{ route('comment.destroy', $post->comments[$i]->id) }}" method="POST" style="display: inline;">
 							{{ csrf_field() }}
@@ -178,7 +190,8 @@
 				</div>
 			</div>
 			@endfor
-
+			
+			@if ($diffHours > 0)
 			<form action="{{ route('comment.store') }}" method="POST" class="mt-2">
 				{{ csrf_field() }}
 
@@ -190,6 +203,7 @@
 				</div>
 
 			</form>
+			@endif
 		</div>
 	</div>
 </div>

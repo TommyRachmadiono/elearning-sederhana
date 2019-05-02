@@ -2,7 +2,7 @@
 
 @section('content')
 
-<div class="mt-5 mb-5">
+<div class="mt-4 mb-5">
 	@if (Auth::User()->role == 'dosen')
 	<button class="btn btn-primary mb-2" data-toggle="modal" data-target="#add_course">Add New Courses</button>
 	@endif
@@ -63,7 +63,12 @@
 				@endif
 				
 				<div>
+					@if ($diffHours > 0) 
 					<a href="{{ route('course_detail', $course->id) }}" class="btn btn-primary">View Course</a>
+					
+					@else
+					<a href="{{ route('course_detail', $course->id) }}" class="btn btn-success">View Archieved Course</a>
+					@endif
 
 					@if (Auth::User()->role == 'dosen')
 					<button class="btn btn-info" data-toggle="modal" data-target="#edit_course{{ $course->id }}">Edit</button>
@@ -108,7 +113,7 @@
 
 				</div>
 				<div class="modal-footer">
-					<button type="submit" class="btn btn-primary">Submit</button>
+					<button type="submit" class="btn btn-primary">Update</button>
 					<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
 				</div>
 			</form>

@@ -36,7 +36,7 @@
 					{{ csrf_field() }}
 
 					<span class="login100-form-title p-b-33">
-						Account Login
+						<h3><b>Simple e-Learning</b></h3>
 					</span>
 					
 					@if(session()->has('success'))
